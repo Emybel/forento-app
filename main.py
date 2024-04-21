@@ -12,7 +12,6 @@ import customtkinter
 from PIL import Image
 from ultralytics import YOLO
 from tkinter import filedialog
-from util.archiveimg import *
 from util.createjson import *
 
 # Define the path to the model
@@ -234,39 +233,7 @@ def save_fly_data(fly_info):
     unique_id = generate_unique_id()
     fly_data[f"fly_{unique_id}"] = fly_info  # Add data with unique key
 
-# def archive_saved_images():
-#     """ Archives saved images in the save_directory by date.
-
-#     - Filters images by date.
-#     - Compresses images from each saved date into a separate ZIP archive.
-#     - Moves the ZIP archive to the "data/archive" directory.
-#     - Clears the original images from the save_directory.
-#     """
-
-#     if save_directory:
-#         today = datetime.date.today()
-
-#         # Iterate through files in the save_directory
-#         for filename in os.listdir(save_directory):
-#             file_path = os.path.join(save_directory, filename)
-
-#             # Check if it's a file (not a directory) and ends with ".png"
-#             if os.path.isfile(file_path) and filename.endswith(".png"):
-#                 image_date = datetime.datetime.strptime(
-#                     filename[17:25], "%d-%m-%y"
-#                 ).date()  # Extract date from filename
-#                 print(image_date)
-#                 if image_date != today:
-#                     # Archive images from previous dates
-#                     archive_filename = f"detected-flies-{image_date}.zip"
-#                     archive_path = os.path.join("data/archive", archive_filename)
-
-#                     with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-#                         zipf.write(file_path, arcname=filename)
-
-#                     # os.remove(file_path)  # Remove original image
-
-# # Define the function to write fly data to JSON (assuming in the same file)
+# Define the function to write fly data to JSON (assuming in the same file)
 def write_fly_data_to_json(fly_data_file, fly_data_per_frame):
     # global fly_data_per_frame  # Access the global list from detect_objects
     
@@ -363,13 +330,12 @@ def detect_objects():
         #     fly_data_per_frame.clear()  # Clear the list after successful write
         # except IOError as e:
         #     print(f"Error writing fly data to JSON: {e}")
-            
+
         #Write data after every frame
         write_fly_data_to_json(fly_data_file, fly_data_per_frame)
-        
-        
+
     # Archive fly images to ZIP file in ../data/archive dir
-    archive_saved_images(save_directory)    
+
     # Update the GUI with the processed frame
     img = Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB))
     photo = customtkinter.CTkImage(img, size=(640, 480))
@@ -379,10 +345,6 @@ def detect_objects():
     # Schedule the next frame capture and detection
     if running:
         app.after(10, detect_objects)
-        
-    # # Write data periodically or on specific conditions
-    # if len(fly_data_per_frame) > 10:  # Write every 10 detections (adjust as needed)
-    #     write_fly_data_to_json(fly_data_per_frame.copy(), fly_data_file)  # Pass a copy to avoid modification
 
 
 app.mainloop()
