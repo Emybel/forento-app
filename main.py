@@ -101,6 +101,7 @@ def create_new_fly_data_file():
 
 # Set appearance mode
 customtkinter.set_appearance_mode("System")
+customtkinter.set_default_color_theme("green")
 
 # Create main app window
 app = customtkinter.CTk()
@@ -129,7 +130,7 @@ main_container.pack(fill="both", expand=True)  # Fills entire window
 
 # **Create frame for header**
 header_frame = customtkinter.CTkFrame(main_container, corner_radius=5)
-header_frame.pack(side="top", fill="x", padx=10, pady=5)
+header_frame.pack( side="top",fill="x", padx=10, pady=5)
 
 # **Create a frame to group sidebar and image frame**
 content_frame = customtkinter.CTkFrame(main_container)
@@ -155,7 +156,7 @@ app_name_label = customtkinter.CTkLabel(header_frame, text="FORENTO Fly Detector
 
 # **Pack logo and app name label in header**
 logo_label = customtkinter.CTkLabel(header_frame, image=logo_image, text=" ", anchor='center')
-logo_label.pack(side="left", padx=10, pady=5)
+logo_label.pack(side="left", padx=40, pady=5)
 app_name_label.pack(side="left", pady=5)
 
 # **Create buttons in sidebar (replace with your functionality)**
@@ -199,7 +200,7 @@ play_button = customtkinter.CTkButton(sidebar_frame, image= play_icon, text=' ',
 play_button.pack(pady=10, padx=10)
 
 # **Add copyright text with white color and centered alignment**
-copyright_text = customtkinter.CTkLabel(footer_frame, text="© 2024 YOTTA", text_color="white", anchor="center",)
+copyright_text = customtkinter.CTkLabel(footer_frame, text="© 2024 YOTTA", text_color="gray", anchor="center",)
 copyright_text.pack(padx=10, pady=10, fill="x")
 
 def start_detection():
@@ -243,6 +244,7 @@ def stop_detection():
     start_button.configure(state="normal")
     stop_button.configure(state="disabled")
     open_folder_button.configure(state="normal")
+    pause_button.configure(state="disable")
     clear_image_label()
     fly_data_file.close()
     # if fly_data_file:
