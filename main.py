@@ -99,56 +99,108 @@ def create_new_fly_data_file():
         print(f"Error opening JSON file: {file_path}")
         return None
 
-# Create the CustomTkinter app
-customtkinter.set_appearance_mode("dark")  # Set the appearance mode
-app = customtkinter.CTk()  # Create the app
-app.geometry("1100x950")  # Set the initial window size
-app.title("Forento Fly Detector")  # Set the title
+# Set appearance mode
+customtkinter.set_appearance_mode("System")
 
-# Create a sidebar frame
-sidebar_frame = customtkinter.CTkFrame(app, width=150, corner_radius=0)
-sidebar_frame.pack(side="left", padx=10, pady=10, fill="y")
+# Create main app window
+app = customtkinter.CTk()
+app.iconbitmap("asset/logo.png") # **Set a bitmap icon for the app**
 
-# Create buttons in the sidebar
+# Set height and width of the app
+app_width = 1100
+app_height = 850
+
+# Get thes center of the screen
+screen_width = app.winfo_screenwidth()
+screen_height = app.winfo_screenheight()
+
+# Get the position of the new top left position of the app
+x =  (screen_width/2) - (app_width/2)
+y =  (screen_height/2) - (app_height/2)
+# Set window size
+app.geometry(f"{app_width}x{app_height}+{int(x)}+{int(y)}")
+app.resizable(height=False, width=False)
+# Set window title
+app.title("Forento Fly Detector")
+
+# **Create a main container frame**
+main_container = customtkinter.CTkFrame(app)
+main_container.pack(fill="both", expand=True)  # Fills entire window
+
+# **Create frame for header**
+header_frame = customtkinter.CTkFrame(main_container, corner_radius=5)
+header_frame.pack(side="top", fill="x", padx=10, pady=5)
+
+# **Create a frame to group sidebar and image frame**
+content_frame = customtkinter.CTkFrame(main_container)
+content_frame.pack(side="top", fill="both", expand=True, padx=5, pady=10)
+
+# **Create frame for sidebar**
+sidebar_frame = customtkinter.CTkFrame(content_frame, width=350, corner_radius=5)
+sidebar_frame.pack(side="left", fill="y", padx=5, pady=5)
+
+# **Create frame for image display**
+image_frame = customtkinter.CTkFrame(content_frame)
+image_frame.pack(side="left", fill="both", expand=True, padx=5, pady=10)
+
+# **Create frame for footer**
+footer_frame = customtkinter.CTkFrame(main_container)
+footer_frame.pack(side="bottom", fill="x", padx=5, pady=5, anchor="center")
+
+# **Load logo image**
+logo_image = customtkinter.CTkImage(Image.open("asset/logo.png"), size=(80, 80))
+
+# **Create label for app name with larger font**
+app_name_label = customtkinter.CTkLabel(header_frame, text="FORENTO Fly Detector", font=("Arial", 20), anchor="center")
+
+# **Pack logo and app name label in header**
+logo_label = customtkinter.CTkLabel(header_frame, image=logo_image, text=" ", anchor='center')
+logo_label.pack(side="left", padx=10, pady=5)
+app_name_label.pack(side="left", pady=5)
+
+# **Create buttons in sidebar (replace with your functionality)**
 start_button = customtkinter.CTkButton(sidebar_frame, text="Start", command=lambda: start_detection())
-start_button.pack(pady=10, fill="x")
+start_button.pack(pady=10, padx=10, fill="x")
 
 stop_button = customtkinter.CTkButton(sidebar_frame, text="Stop", command=lambda: stop_detection(), state="disabled")
-stop_button.pack(pady=10, fill="x")
+stop_button.pack(pady=10, padx=10, fill="x")
 
 open_folder_button = customtkinter.CTkButton(sidebar_frame, text="Open Folder", command=lambda: open_save_folder(), state="disabled")
-open_folder_button.pack(pady=10, fill="x")
+open_folder_button.pack(pady=10, padx=10, fill="x")
 
 exit_button = customtkinter.CTkButton(sidebar_frame, text="Exit", command=app.quit)
-exit_button.pack(pady=10, fill="x")
+exit_button.pack(pady=10, padx=10, fill="x")
 
-# Create a label for the confidence spinbox
-confidence_label = customtkinter.CTkLabel(sidebar_frame, text="Confidence Threshold:")
-confidence_label.pack(pady=10)
-
-# Create the confidence spinbox with initial value of 0.85 and increments of 0.01
-confidence_var = customtkinter.IntVar(value= 85)  # Initial value as 85 (represents 0.85)
-confidence_entry = customtkinter.CTkEntry(
-                    sidebar_frame,
-                    width= 200,  
-                    textvariable=confidence_var)
-confidence_entry.pack(pady=10)
-
-# Create buttons for pause and play confidence threshold functionality
-pause_button = customtkinter.CTkButton(sidebar_frame, text="pause", command=lambda: pause_detection(), state="disabled")
-pause_button.pack(pady=10, fill="x")
-
-play_button = customtkinter.CTkButton(sidebar_frame, text="play", command=lambda: resume_detection(), state="normal")
-play_button.pack(pady=10, fill="x")
-
-# Create a frame to hold the image
-image_frame = customtkinter.CTkFrame(app)
-image_frame.pack(padx=10, pady=10, fill="both", expand=True)
-
-# Create a label to display the image
+# Create label to display image (initially empty)
 image_label = customtkinter.CTkLabel(image_frame, text="")
 image_label.pack(fill="both", expand=True)
 
+# **Create a label for confidence threshold spinbox**
+confidence_label = customtkinter.CTkLabel(sidebar_frame, text="Confidence Threshold:")
+confidence_label.pack(pady=10)
+
+# **Create a spinbox for confidence threshold with initial value and increments**
+confidence_var = customtkinter.IntVar(value=85)  # Initial value as 85 (represents 0.85)
+confidence_entry = customtkinter.CTkEntry(
+    sidebar_frame,
+    width=150,
+    textvariable=confidence_var
+)
+confidence_entry.pack(pady=10, padx=10)
+# **Load play and pause icon images**
+play_icon = customtkinter.CTkImage(Image.open("asset/play.png"), size=(20, 20))
+pause_icon = customtkinter.CTkImage(Image.open("asset/pause.png"), size=(20, 20))
+
+# **Create buttons for pause/play confidence threshold functionality (replace with your logic)**
+pause_button = customtkinter.CTkButton(sidebar_frame, image= pause_icon, text=' ', corner_radius=100, command=lambda: pause_detection(), state="disabled")
+pause_button.pack(pady=10, padx=10)
+
+play_button = customtkinter.CTkButton(sidebar_frame, image= play_icon, text=' ', corner_radius=100, command=lambda: resume_detection(), state="disabled")
+play_button.pack(pady=10, padx=10)
+
+# **Add copyright text with white color and centered alignment**
+copyright_text = customtkinter.CTkLabel(footer_frame, text="© 2024 YOTTA", text_color="white", anchor="center",)
+copyright_text.pack(padx=10, pady=10, fill="x")
 
 def start_detection():
     global cap, running, save_directory, fly_data_file
@@ -235,21 +287,29 @@ def save_fly_data(fly_info):
 
 # Define the function to write fly data to JSON (assuming in the same file)
 def write_fly_data_to_json(fly_data_file, fly_data_per_frame):
-    # global fly_data_per_frame  # Access the global list from detect_objects
-    
+
+
     if fly_data_file:
         
         try:
-            # Open in read mode
-            # with open(fly_data_file.name, 'r') as  fly_data_file:
-                # json_load = json.load(fly_data_file)
-                # print(json_load)
+            # Check if file has data
+            if fly_data_file.read(1):
+                with open(fly_data_file.name, 'r') as fly_data_file:
+                    json_load = json.load(fly_data_file)
+                    # print(json_load)
+                    data_to_write = json_load["data"] + fly_data_per_frame
+                    new_data_to_write = {"data": data_to_write}  # Wrap data in top-level object
+                with open(fly_data_file.name, 'w') as  fly_data_file:
+                    json.dump(fly_data_per_frame, fly_data_file, indent=2)
+                fly_data_per_frame.clear()  # Clear the list after successful write
             
-                # data_to_write = json_load["data"] + fly_data_per_frame
-                # new_data_to_write = {"data": data_to_write}  # Wrap data in top-level object
-            with open(fly_data_file.name, 'w') as  fly_data_file:
-                json.dump(fly_data_per_frame, fly_data_file.name, indent=2)
-            fly_data_per_frame.clear()  # Clear the list after successful write
+            else:
+                # Empty file, create an empty list/dict
+                json_load = {"data": []}  
+                new_data_to_write = {"data": json_load["data"] + fly_data_per_frame}  # Wrap data in top-level object
+                with open(fly_data_file.name, 'w') as fly_data_file:
+                    json.dump(new_data_to_write, fly_data_file, indent=2)
+                fly_data_per_frame.clear()  # Clear the list after successful write
         except IOError as e:
             print(f"Error writing fly data to JSON: {e}")
 
@@ -331,8 +391,10 @@ def detect_objects():
         # except IOError as e:
         #     print(f"Error writing fly data to JSON: {e}")
 
-        #Write data after every frame
-        write_fly_data_to_json(fly_data_file, fly_data_per_frame)
+        # Write fly data only if there are entries in the list
+        if fly_data_per_frame:
+            write_fly_data_to_json(fly_data_file, fly_data_per_frame)
+            fly_data_per_frame.clear()  # Clear the list after successful write
 
     # Archive fly images to ZIP file in ../data/archive dir
 
