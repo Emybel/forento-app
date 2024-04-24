@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import copy
 import shutil  # Import shutil for file/folder moving
@@ -11,8 +12,11 @@ import numpy as np
 import customtkinter
 from PIL import Image
 from ultralytics import YOLO
-from tkinter import filedialog
 from util.createjson import *
+from tkinter import filedialog
+from CTkMessagebox import CTkMessagebox
+# from customtkinter import CTkMessagebox
+
 
 # Define the path to the model
 model_path = "forentoModel.pt"
@@ -99,6 +103,39 @@ def create_new_fly_data_file():
         print(f"Error opening JSON file: {file_path}")
         return None
 
+def exit_program():
+    """Performs cleanup tasks and exits the program."""
+    global cap, fly_data_file, running
+
+    # Close the camera capture (if open)
+    if cap:
+        cap.release()
+
+    # Close the JSON file (if open)
+    if fly_data_file:
+        fly_data_file.close()
+
+    # Set a flag to stop the main loop (if applicable)
+    running = False
+
+    # Exit the program
+    sys.exit()  # Import the `sys` module if not already imported
+
+def ask_question():
+    msg = CTkMessagebox(title="Exit", 
+                        message="Do you want to close the program?", 
+                        icon="question",  
+                        option_1="Yes", 
+                        option_2="No")
+    
+    response = msg.get()
+    
+    if response == "Yes":
+        # Call a function to handle cleanup and program termination
+        exit_program()
+    else:
+        print("Operation canceled.")
+
 # Set appearance mode
 customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("green")
@@ -169,7 +206,7 @@ stop_button.pack(pady=10, padx=10, fill="x")
 open_folder_button = customtkinter.CTkButton(sidebar_frame, text="Open Folder", command=lambda: open_save_folder(), state="disabled")
 open_folder_button.pack(pady=10, padx=10, fill="x")
 
-exit_button = customtkinter.CTkButton(sidebar_frame, text="Exit", command=app.quit)
+exit_button = customtkinter.CTkButton(sidebar_frame, text="Exit", command=ask_question, state="normal")
 exit_button.pack(pady=10, padx=10, fill="x")
 
 # Create label to display image (initially empty)
@@ -236,6 +273,7 @@ def start_detection():
     open_folder_button.configure(state="normal")
     pause_button.configure(state="normal")  # Enable pause button when detection starts
     confidence_entry.configure(state="disabled")  # Disable confidence entry editing
+    exit_button.configure(state="disabled") # Disable exit button when detection starts
     detect_objects()
 
 def stop_detection():
@@ -245,12 +283,12 @@ def stop_detection():
     stop_button.configure(state="disabled")
     open_folder_button.configure(state="normal")
     pause_button.configure(state="disable")
+    exit_button.configure(state="normal")
     clear_image_label()
     fly_data_file.close()
     # if fly_data_file:
     #     fly_data_file.close()  # Close the JSON file
     #     fly_data_file = None
-
 
 def open_save_folder():
     if save_directory:
@@ -410,7 +448,8 @@ def detect_objects():
     if running:
         app.after(10, detect_objects)
 
-
+# Bind the on_closing function to the window's closing event
+app.protocol("WM_DELETE_WINDOW", ask_question)
 app.mainloop()
 
 # Release the capture when the app is closed
